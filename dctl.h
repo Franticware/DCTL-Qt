@@ -127,7 +127,7 @@ inline float _floor(float f)
     return std::floor(f);
 }
 
-inline float _tex2D(const __TEXTURE__ t, float xf, float yf)
+inline float _tex2D(__TEXTURE__ t, float xf, float yf)
 {
     int x = std::floor(xf);
     int y = std::floor(yf);
@@ -136,8 +136,6 @@ inline float _tex2D(const __TEXTURE__ t, float xf, float yf)
     if (y < 0) y = 0; else if (y >= t.h) y = t.h - 1;
 
     return t.p[x + y * t.w];
-
-    //return 0;
 }
 
 inline float _round(float f)
@@ -157,13 +155,7 @@ inline float _acosf(float f)
 
 inline float _clampf(float f, float l, float h)
 {
-    //return std::clamp(f, l, h);
-
-    if (f < l) f = l;
-    if (f > h) f = h;
-
-    return f;
-
+    return std::clamp(f, l, h);
 }
 
 inline float _copysignf(float x, float y)
