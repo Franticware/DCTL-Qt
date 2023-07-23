@@ -11,8 +11,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    ui->widget->setParams(&txr, &txg, &txb, &m_zoom, ui->spinBoxThreads, ui->checkBoxCenterLines);
+    {
+        QImage imgTmp(1, 1, QImage::Format_ARGB32);
+        imgTmp.fill(Qt::black);
+        m_image.swap(imgTmp);
+    }
+    ui->widget->setParams(&m_image, &m_zoom, ui->spinBoxThreads, ui->checkBoxCenterLines);
 
     updateZoom(ui->comboBoxZoom->currentText());
 
@@ -135,23 +139,8 @@ void MainWindow::openImage(QString newImageFilename)
     QApplication::processEvents();
     if (m_image.load(m_filename))
     {
+        m_image = m_image.convertToFormat(QImage::Format_ARGB32);
         ui->statusbar->showMessage("Image opened, " + QString::number(m_image.width()) + "x" + QString::number(m_image.height()));
-        txr.resize(m_image.width(), m_image.height());
-        txg.resize(m_image.width(), m_image.height());
-        txb.resize(m_image.width(), m_image.height());
-
-        for (int y = 0; y != m_image.height(); ++y)
-        {
-            for (int x = 0; x != m_image.width(); ++x)
-            {
-                QRgb rgb = m_image.pixel(x, y);
-
-                txr.p[x + y * txr.w] = qRed(rgb)/255.f;
-                txg.p[x + y * txg.w] = qGreen(rgb)/255.f;
-                txb.p[x + y * txb.w] = qBlue(rgb)/255.f;
-
-            }
-        }
         ui->widget->updateResultImage();
     }
     else

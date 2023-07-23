@@ -46,12 +46,11 @@ inline float3 make_float3(float x, float y, float z)
 
 struct Texture
 {
-    Texture() { w = 1; h = 1; p.push_back(0); }
-    void resize(int x, int y) { w = x; h = y; p.resize(w * h); }
+    Texture(int prmW, int prmH, const unsigned char* prmP) : w(prmW), h(prmH), p(prmP) { }
 
     int w;
     int h;
-    std::vector<float> p;
+    const unsigned char* p;
 };
 
 typedef const Texture& __TEXTURE__;
@@ -178,10 +177,10 @@ inline float _tex2D(__TEXTURE__ t, float xf, float yf)
     int x = std::floor(xf);
     int y = std::floor(yf);
 
-    if (x < 0) x = 0; else if (x >= t.w) x = t.w - 1;
-    if (y < 0) y = 0; else if (y >= t.h) y = t.h - 1;
+    x = std::clamp(x, 0, t.w - 1);
+    y = std::clamp(y, 0, t.h - 1);
 
-    return t.p[x + y * t.w];
+    return t.p[(x + y * t.w) << 2] / 255.f;
 }
 
 float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTURE__ p_TexR, __TEXTURE__ p_TexG, __TEXTURE__ p_TexB);

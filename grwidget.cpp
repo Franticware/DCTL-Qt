@@ -27,16 +27,21 @@ void GrWidget::updateResultImage()
 
 void GrWidget::processImage(QImage& result, int z, int threads)
 {
-    QSize sz(m_txr->w * z / 100, m_txr->h * z / 100);
+    QSize sz(m_image->width() * z / 100, m_image->height() * z / 100);
     pixbuf.resize(sz.width() * sz.height() * 4);
-    auto processImageSectionFunc = [this, sz](int y0, int y1) -> void {
+    const unsigned char* imgBits = m_image->bits();
+    Texture txr(m_image->width(), m_image->height(), imgBits + 2);
+    Texture txg(m_image->width(), m_image->height(), imgBits + 1);
+    Texture txb(m_image->width(), m_image->height(), imgBits + 0);
+    auto processImageSectionFunc = [this, sz, txr, txg, txb](int y0, int y1) -> void
+    {
         for (int y = y0; y < y1; ++y)
         {
             for (int x = 0; x != sz.width(); ++x)
             {
-                int xb = x * m_txr->w / sz.width();
-                int yb = y * m_txr->h / sz.height();
-                float3 color = ::transform(m_txr->w, m_txr->h, xb, yb, *m_txr, *m_txg, *m_txb);
+                int xb = x * m_image->width() / sz.width();
+                int yb = y * m_image->height() / sz.height();
+                float3 color = ::transform(m_image->width(), m_image->height(), xb, yb, txr, txg, txb);
 
                 int rc = color.z * 255;
                 int gc = color.y * 255;

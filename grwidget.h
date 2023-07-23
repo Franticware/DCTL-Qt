@@ -19,11 +19,9 @@ public:
     ~GrWidget();
 
     void paintEvent(QPaintEvent *event);
-    void setParams(Texture* r, Texture* g, Texture* b, int* zoom, QSpinBox* thr, QCheckBox* checkBoxCenterLines)
+    void setParams(const QImage* img, int* zoom, QSpinBox* thr, QCheckBox* checkBoxCenterLines)
     {
-        m_txr = r;
-        m_txg = g;
-        m_txb = b;
+        m_image = img;
         m_zoom = zoom;
         m_spinBoxThreads = thr;
         m_checkBoxCenterLines = checkBoxCenterLines;
@@ -37,13 +35,10 @@ public slots:
 private:
     Ui::GrWidget *ui;
 
-    Texture* m_txr;
-    Texture* m_txg;
-    Texture* m_txb;
+    const QImage* m_image;
     int* m_zoom;
     QSpinBox* m_spinBoxThreads;
     QCheckBox* m_checkBoxCenterLines;
-
     QImage m_resultImage;
 
     std::vector<uint8_t> pixbuf;

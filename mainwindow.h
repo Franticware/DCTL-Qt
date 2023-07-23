@@ -43,10 +43,6 @@ private:
     QImage m_image;
     int m_zoom;
 
-    Texture txr;
-    Texture txg;
-    Texture txb;
-
     void openImage(QString newImageFilename);
 };
 
