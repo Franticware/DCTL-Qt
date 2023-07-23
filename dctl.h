@@ -22,10 +22,27 @@ struct float2
     float x, y;
 };
 
+inline float2 make_float2(float x, float y)
+{
+    float2 ret;
+    ret.x = x;
+    ret.y = y;
+    return ret;
+}
+
 struct float3
 {
     float x, y, z;
 };
+
+inline float3 make_float3(float x, float y, float z)
+{
+    float3 ret;
+    ret.x = x;
+    ret.y = y;
+    ret.z = z;
+    return ret;
+}
 
 struct Texture
 {
@@ -80,74 +97,6 @@ public slots:
     void reset();
 };
 
-inline float _fdivide(float x, float y)
-{
-    return x/y;
-}
-
-inline float _cosf(float f)
-{
-    return std::cos(f);
-}
-
-inline float _sinf(float f)
-{
-    return std::sin(f);
-}
-
-inline float _fmaf(float x, float y, float z)
-{
-    return std::fma(x, y, z);
-}
-
-inline float2 make_float2(float x, float y)
-{
-    float2 ret;
-    ret.x = x;
-    ret.y = y;
-    return ret;
-}
-
-inline float3 make_float3(float x, float y, float z)
-{
-    float3 ret;
-    ret.x = x;
-    ret.y = y;
-    ret.z = z;
-    return ret;
-}
-
-inline float _fabs(float f)
-{
-    return std::fabs(f);
-}
-
-inline float _floor(float f)
-{
-    return std::floor(f);
-}
-
-inline float _tex2D(__TEXTURE__ t, float xf, float yf)
-{
-    int x = std::floor(xf);
-    int y = std::floor(yf);
-
-    if (x < 0) x = 0; else if (x >= t.w) x = t.w - 1;
-    if (y < 0) y = 0; else if (y >= t.h) y = t.h - 1;
-
-    return t.p[x + y * t.w];
-}
-
-inline float _round(float f)
-{
-    return std::round(f);
-}
-
-inline float _hypotf(float x, float y)
-{
-    return std::hypot(x, y);
-}
-
 inline float _acosf(float f)
 {
     return std::acos(f);
@@ -162,6 +111,80 @@ inline float _copysignf(float x, float y)
 {
     return std::copysign(x, y);
 }
+
+inline float _cosf(float f)
+{
+    return std::cos(f);
+}
+
+inline float _exp2f(float f)
+{
+    return std::exp2(f);
+}
+
+inline float _fabs(float f)
+{
+    return std::fabs(f);
+}
+
+inline float _fdivide(float x, float y)
+{
+    return x/y;
+}
+
+inline float _floor(float f)
+{
+    return std::floor(f);
+}
+
+inline float _fmaf(float x, float y, float z)
+{
+    return std::fma(x, y, z);
+}
+
+inline float _fmaxf(float x, float y)
+{
+    return std::fmax(x, y);
+}
+
+inline float _fminf(float x, float y)
+{
+    return std::fmin(x, y);
+}
+
+inline float _hypotf(float x, float y)
+{
+    return std::hypot(x, y);
+}
+
+inline float _round(float f)
+{
+    return std::round(f);
+}
+
+inline float _saturatef(float f)
+{
+    if (f != f) return 0;
+    return _clampf(f, 0, 1);
+}
+
+inline float _sinf(float f)
+{
+    return std::sin(f);
+}
+
+inline float _tex2D(__TEXTURE__ t, float xf, float yf)
+{
+    int x = std::floor(xf);
+    int y = std::floor(yf);
+
+    if (x < 0) x = 0; else if (x >= t.w) x = t.w - 1;
+    if (y < 0) y = 0; else if (y >= t.h) y = t.h - 1;
+
+    return t.p[x + y * t.w];
+}
+
+float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTURE__ p_TexR, __TEXTURE__ p_TexG, __TEXTURE__ p_TexB);
 
 extern DCTL_CheckBox CIRCLE_ADJ;
 extern DCTL_Slider CIRCLE_CENTX;
@@ -223,28 +246,5 @@ inline int define_ui_param(DCTL_Slider& v, const char* name, int type, ...)
 }
 
 #define DEFINE_UI_PARAMS(v, name, type, ...) static int DUMMY_##v = define_ui_param(v, #name, type, __VA_ARGS__);
-
-inline float _saturatef(float f)
-{
-    if (f != f) return 0;
-    return _clampf(f, 0, 1);
-}
-
-inline float _exp2f(float f)
-{
-    return std::exp2(f);
-}
-
-inline float _fminf(float x, float y)
-{
-    return std::fmin(x, y);
-}
-
-inline float _fmaxf(float x, float y)
-{
-    return std::fmax(x, y);
-}
-
-float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTURE__ p_TexR, __TEXTURE__ p_TexG, __TEXTURE__ p_TexB);
 
 #endif // DCTL_H
