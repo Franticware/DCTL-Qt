@@ -1,7 +1,7 @@
 DeFisheye (Qt)
 ====
 
-Making use of roukou3's great DCTL plugin for my Meike 6.5 mm F/2.0 without touching DaVinci Resolve, not even with a 3.048 m pole. Coded Qt-based app instead. Default parameters are currently tuned for Sony APS-C variant of this lens.
+Making use of roukou3's great DCTL plugins for fisheye lens without touching DaVinci Resolve, not even with a 3.048 m pole. Coded Qt-based app with its own plugin system instead.
 
 The original readme follows:
 
