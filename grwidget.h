@@ -1,10 +1,11 @@
-#ifndef GRWIDGET_H
+﻿#ifndef GRWIDGET_H
 #define GRWIDGET_H
 
 #include <QWidget>
 #include <QSpinBox>
+#include <QCheckBox>
 
-#include "dctl.h"
+#include "dctl_struct.h"
 
 namespace Ui {
 class GrWidget;
@@ -19,12 +20,13 @@ public:
     ~GrWidget();
 
     void paintEvent(QPaintEvent *event);
-    void setParams(const QImage* img, int* zoom, QSpinBox* thr, QCheckBox* checkBoxCenterLines)
+    void setParams(const QImage* img, int* zoom, QSpinBox* thr, QCheckBox* checkBoxCenterLines, DCTL_checkBox** equirectCb)
     {
         m_image = img;
         m_zoom = zoom;
         m_spinBoxThreads = thr;
         m_checkBoxCenterLines = checkBoxCenterLines;
+        m_equirectCheckBoxValues = equirectCb;
     }
 
     void processImage(QImage& result, int z, int thr);
@@ -40,6 +42,8 @@ private:
     QSpinBox* m_spinBoxThreads;
     QCheckBox* m_checkBoxCenterLines;
     QImage m_resultImage;
+
+    DCTL_checkBox** m_equirectCheckBoxValues = nullptr;
 
     std::vector<uint8_t> pixbuf;
 };

@@ -1,5 +1,5 @@
-#ifndef DCTL_H
-#define DCTL_H
+#ifndef DCTL_PARTA_H
+#define DCTL_PARTA_H
 
 #include <cmath>
 #include <algorithm>
@@ -10,12 +10,9 @@
 #include <vector>
 #include <cstdint>
 
-#include <QObject>
-#include <QLabel>
-#include <QCheckBox>
-#include <QSlider>
+#include "dctl_struct.h"
 
-#define __DEVICE__
+#define __DEVICE__ inline
 
 struct float2
 {
@@ -54,47 +51,6 @@ struct Texture
 };
 
 typedef const Texture& __TEXTURE__;
-
-struct DCTL_CheckBox : public QObject
-{
-    Q_OBJECT
-public:
-    const char* name;
-    bool def;
-    bool value;
-
-    operator bool() {return value;}
-
-    QCheckBox* cb = nullptr;
-
-public slots:
-    void stateChanged(int state);
-
-    void reset();
-};
-
-class DCTL_Slider : public QObject
-{
-    Q_OBJECT
-public:
-    const char* name;
-    float def;
-    float lo;
-    float hi;
-    float step;
-    float value;
-
-    operator float() {return value;}
-
-    QLabel* labelValue = nullptr;
-
-    QSlider* sl = nullptr;
-
-public slots:
-    void valueChanged(int value);
-
-    void reset();
-};
 
 inline float _acosf(float f)
 {
@@ -172,6 +128,11 @@ inline float _sinf(float f)
     return std::sin(f);
 }
 
+inline float _tanf(float f)
+{
+    return std::tan(f);
+}
+
 inline float _tex2D(__TEXTURE__ t, float xf, float yf)
 {
     int x = std::floor(xf);
@@ -185,65 +146,70 @@ inline float _tex2D(__TEXTURE__ t, float xf, float yf)
 
 float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTURE__ p_TexR, __TEXTURE__ p_TexG, __TEXTURE__ p_TexB);
 
-extern DCTL_CheckBox CIRCLE_ADJ;
-extern DCTL_Slider CIRCLE_CENTX;
-extern DCTL_Slider CIRCLE_CENTY;
-extern DCTL_Slider CIRCLE_RAD;
-extern DCTL_Slider PIX_ASPECT;
-extern DCTL_Slider FOCAL_LENGTH;
-extern DCTL_CheckBox INTERP;
-extern DCTL_CheckBox EQUIRECT;
-extern DCTL_CheckBox HIDE_OUTSIDE;
-extern DCTL_Slider ANGLE_PAN;
-extern DCTL_Slider ANGLE_TILT;
-extern DCTL_Slider ANGLE_ROTATE;
-extern DCTL_Slider DEFISH_RATE;
-extern DCTL_Slider ANGLE_PAN2;
-extern DCTL_Slider ANGLE_TILT2;
-extern DCTL_Slider ANGLE_ROTATE2;
-extern DCTL_Slider HIDE_OUTSIDE_DEGREE;
+static std::vector<void*> dctlUiVect;
 
-#define DCTLUI_CHECK_BOX 0
-#define DCTLUI_SLIDER_FLOAT 1
+inline int addToUiVect(void* p) { dctlUiVect.push_back(p); return 0; }
 
-inline int define_ui_param(DCTL_CheckBox& v, const char* name, int type, ...)
+struct DCTLUI_SLIDER_FLOAT_t
 {
-    assert(type == DCTLUI_CHECK_BOX);
+    int type;
+    const char* name;
+    const char* label;
+    float val, def, lo, hi, step;
+    operator float() { return val; }
+};
+
+struct DCTLUI_CHECK_BOX_t
+{
+    int type;
+    const char* name;
+    const char* label;
+    int val, def;
+    operator int() { return val; }
+};
+
+DCTLUI_SLIDER_FLOAT_t DCTLUI_SLIDER_FLOAT_init(const char* name, const char* label, ...)
+{
+    DCTLUI_SLIDER_FLOAT_t ret;
+    ret.type = DCTL_SLIDER;
+    ret.name = name;
+    ret.label = label;
 
     va_list ptr;
-    va_start(ptr, type);
-    int value = va_arg(ptr, int);
-    va_end(ptr);
-
-    v.value = 0;
-    v.def = value != 0;
-    v.name = name;
-
-    return 0;
-}
-
-inline int define_ui_param(DCTL_Slider& v, const char* name, int type, ...)
-{
-    assert(type == DCTLUI_SLIDER_FLOAT);
-
-    va_list ptr;
-    va_start(ptr, type);
+    va_start(ptr, label);
     double value0 = va_arg(ptr, double);
     double value1 = va_arg(ptr, double);
     double value2 = va_arg(ptr, double);
     double value3 = va_arg(ptr, double);
     va_end(ptr);
 
-    v.value = 0;
-    v.def = value0;
-    v.lo = value1;
-    v.hi = value2;
-    v.step = value3;
-    v.name = name;
+    ret.val = 0;
+    ret.def = value0;
+    ret.lo = value1;
+    ret.hi = value2;
+    ret.step = value3;
 
-    return 0;
+    return ret;
 }
 
-#define DEFINE_UI_PARAMS(v, name, type, ...) static int DUMMY_##v = define_ui_param(v, #name, type, __VA_ARGS__);
+DCTLUI_CHECK_BOX_t DCTLUI_CHECK_BOX_init(const char* name, const char* label, ...)
+{
+    DCTLUI_CHECK_BOX_t ret;
+    ret.type = DCTL_CHECKBOX;
+    ret.name = name;
+    ret.label = label;
 
-#endif // DCTL_H
+    va_list ptr;
+    va_start(ptr, label);
+    int value = va_arg(ptr, int);
+    va_end(ptr);
+
+    ret.val = 0;
+    ret.def = value != 0;
+
+    return ret;
+}
+
+#define DEFINE_UI_PARAMS(v, label, type, ...) static type##_t v = type##_init(#v, #label, __VA_ARGS__); static const int v##_dummy = addToUiVect((void*)&v);
+
+#endif // DCTL_PARTA_H

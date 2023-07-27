@@ -6,6 +6,8 @@
 
 #include <thread>
 
+#include "dctl_plugin.h"
+
 GrWidget::GrWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GrWidget)
@@ -30,10 +32,7 @@ void GrWidget::processImage(QImage& result, int z, int threads)
     QSize sz(m_image->width() * z / 100, m_image->height() * z / 100);
     pixbuf.resize(sz.width() * sz.height() * 4);
     const unsigned char* imgBits = m_image->bits();
-    Texture txr(m_image->width(), m_image->height(), imgBits + 2);
-    Texture txg(m_image->width(), m_image->height(), imgBits + 1);
-    Texture txb(m_image->width(), m_image->height(), imgBits + 0);
-    auto processImageSectionFunc = [this, sz, txr, txg, txb](int y0, int y1) -> void
+    auto processImageSectionFunc = [this, sz, imgBits](int y0, int y1) -> void
     {
         for (int y = y0; y < y1; ++y)
         {
@@ -41,16 +40,7 @@ void GrWidget::processImage(QImage& result, int z, int threads)
             {
                 int xb = x * m_image->width() / sz.width();
                 int yb = y * m_image->height() / sz.height();
-                float3 color = ::transform(m_image->width(), m_image->height(), xb, yb, txr, txg, txb);
-
-                int rc = color.z * 255;
-                int gc = color.y * 255;
-                int bc = color.x * 255;
-
-                pixbuf[(x + y * sz.width()) * 4 + 0] = std::clamp(rc, 0, 255);
-                pixbuf[(x + y * sz.width()) * 4 + 1] = std::clamp(gc, 0, 255);
-                pixbuf[(x + y * sz.width()) * 4 + 2] = std::clamp(bc, 0, 255);
-                pixbuf[(x + y * sz.width()) * 4 + 3] = 255;
+                DCTL_transform(pixbuf.data() + (x + y * sz.width()) * 4, m_image->width(), m_image->height(), xb, yb, imgBits, m_image->width(), m_image->height());
             }
         }
     };
@@ -80,7 +70,7 @@ void GrWidget::processImage(QImage& result, int z, int threads)
             t.join();
         }
     }
-    if (EQUIRECT.value)
+    if (*m_equirectCheckBoxValues && (*m_equirectCheckBoxValues)->val)
     {
         int height = sz.width() / 2;
         int yoff = (sz.height() - height) / 2;

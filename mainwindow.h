@@ -8,7 +8,7 @@
 #include <QImage>
 #include <QPushButton>
 
-#include "dctl.h"
+#include "dctlq.h"
 
 namespace Ui {
 class MainWindow;
@@ -33,11 +33,10 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    void addParamWidget(int& row, QPushButton* resetAll, DCTL_CheckBox&);
-    void addParamWidget(int& row, QPushButton* resetAll, DCTL_Slider&);
-
-    void adjustDefaults();
+    void addParamWidget(int row, QPushButton* resetAll, void* param);
     void updateZoom(const QString& zoom);
+
+    DCTL_checkBox* m_equirectCheckBoxValues = nullptr;
 
     QString m_filename;
     QImage m_image;
