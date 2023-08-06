@@ -45,6 +45,11 @@ bool WrapSettings::exists(const char* name)
     return contains(fullKeyName(name));
 }
 
+QString WrapSettings::getPluginNameWithoutExt() const
+{
+    return pluginName.mid(0, pluginName.lastIndexOf('.'));
+}
+
 QString WrapSettings::fullKeyName(const char* name)
 {
     return pluginName + "/" + name;

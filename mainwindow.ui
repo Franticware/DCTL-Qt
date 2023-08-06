@@ -138,7 +138,7 @@
          <number>25</number>
         </property>
         <item row="0" column="0">
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="labelParamsTitle">
           <property name="font">
            <font>
             <bold>true</bold>
