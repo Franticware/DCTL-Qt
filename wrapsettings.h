@@ -13,7 +13,7 @@ public:
     void loadDefault(const char* name, float& value);
     void factoryReset(const char* name);
     bool exists(const char* name);
-    QString getPluginNameWithoutExt() const;
+    QString getLensName() const;
 
 private:
     QString pluginName;

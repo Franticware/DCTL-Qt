@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->labelParamsTitle->setText("Parameters of " + g_wrapSettings.getPluginNameWithoutExt());
+    ui->labelParamsTitle->setText("Parameters of " + g_wrapSettings.getLensName());
     {
         QImage imgTmp(1, 1, QImage::Format_ARGB32);
         imgTmp.fill(Qt::black);

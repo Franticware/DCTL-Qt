@@ -1,5 +1,7 @@
 #include "wrapsettings.h"
 
+#include <QRegularExpression>
+
 WrapSettings g_wrapSettings;
 
 WrapSettings::WrapSettings() : QSettings("Franticware", "defisheye")
@@ -45,9 +47,31 @@ bool WrapSettings::exists(const char* name)
     return contains(fullKeyName(name));
 }
 
-QString WrapSettings::getPluginNameWithoutExt() const
+QString WrapSettings::getLensName() const
 {
-    return pluginName.mid(0, pluginName.lastIndexOf('.'));
+    QString base = pluginName.mid(0, pluginName.lastIndexOf('.'));
+    int fIndex = base.lastIndexOf('f');
+    if (fIndex == -1)
+    {
+        return base;
+    }
+    QString fVal = base.mid(fIndex + 1);
+    QString half = base.mid(0, fIndex);
+    int lastIndex = half.lastIndexOf(QRegularExpression("[^0-9.]"));
+    if (lastIndex == -1)
+    {
+        return base;
+    }
+    ++lastIndex;
+    QString brand = half.mid(0, lastIndex);
+    QString focal = half.mid(lastIndex);
+
+    if (brand.length() == 0)
+    {
+        return base;
+    }
+    brand[0] = brand[0].toUpper();
+    return brand + " " + focal + "mm f/" + fVal;
 }
 
 QString WrapSettings::fullKeyName(const char* name)
