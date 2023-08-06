@@ -29,12 +29,16 @@ public:
     DCTL_QSlider(QObject* parent) : QObject(parent) { }
 
     DCTL_slider* data = nullptr;
+    float udef = 0.f;
     QLabel* labelValue = nullptr;
     QSlider* sl = nullptr;
 
 public slots:
     void valueChanged(int value);
     void reset();
+    void openMenu();
+    void saveDef();
+    void revertDef();
 };
 
 #endif // DCTLQ_H

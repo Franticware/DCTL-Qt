@@ -7,6 +7,7 @@
 #include <QMessageBox>
 
 #include "dctl_plugin.h"
+#include "wrapsettings.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     updateZoom(ui->comboBoxZoom->currentText());
 
     auto resetAll = new QPushButton("⟲", this);
+    resetAll->setMaximumWidth(resetButtonMaxWidth);
     resetAll->setToolTip("Reset all parameters");
     QGridLayout* gl = dynamic_cast<QGridLayout*>(ui->scrollArea->widget()->layout());
     gl->addWidget(resetAll, 0, 3);
@@ -70,9 +72,10 @@ void MainWindow::addParamWidget(int row, QPushButton* resetAll, void* param)
         gl->addWidget(w, row, 1);
 
         auto rb = new QPushButton("⟲");
-                                  gl->addWidget(rb, row, 3);
-                                  connect(rb, &QPushButton::clicked, &cbData, &DCTL_QCheckBox::reset);
-                                  connect(resetAll, &QPushButton::clicked, &cbData, &DCTL_QCheckBox::reset);
+        rb->setMaximumWidth(resetButtonMaxWidth);
+        gl->addWidget(rb, row, 3);
+        connect(rb, &QPushButton::clicked, &cbData, &DCTL_QCheckBox::reset);
+        connect(resetAll, &QPushButton::clicked, &cbData, &DCTL_QCheckBox::reset);
     }
     else if (paramGeneric->type == DCTL_SLIDER)
     {
@@ -80,7 +83,9 @@ void MainWindow::addParamWidget(int row, QPushButton* resetAll, void* param)
         DCTL_QSlider& sliderData = *new DCTL_QSlider(this);
         sliderData.data = paramSlider;
 
-        sliderData.data->val = sliderData.data->def;
+        sliderData.udef = sliderData.data->def;
+        g_wrapSettings.loadDefault(sliderData.data->name, sliderData.udef);
+        sliderData.data->val = sliderData.udef;
 
         QGridLayout* gl = dynamic_cast<QGridLayout*>(ui->scrollArea->widget()->layout());
 
@@ -105,9 +110,15 @@ void MainWindow::addParamWidget(int row, QPushButton* resetAll, void* param)
         gl->addWidget(v, row, 2);
 
         auto rb = new QPushButton("⟲");
-                                  gl->addWidget(rb, row, 3);
-                                  connect(rb, &QPushButton::clicked, &sliderData, &DCTL_QSlider::reset);
-                                  connect(resetAll, &QPushButton::clicked, &sliderData, &DCTL_QSlider::reset);
+        rb->setMaximumWidth(resetButtonMaxWidth);
+        gl->addWidget(rb, row, 3);
+        connect(rb, &QPushButton::clicked, &sliderData, &DCTL_QSlider::reset);
+        connect(resetAll, &QPushButton::clicked, &sliderData, &DCTL_QSlider::reset);
+
+        auto mb = new QPushButton("...");
+        mb->setMaximumWidth(resetButtonMaxWidth);
+        gl->addWidget(mb, row, 4);
+        connect(mb, &QPushButton::clicked, &sliderData, &DCTL_QSlider::openMenu);
     }
 }
 

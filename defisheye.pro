@@ -11,7 +11,8 @@ HEADERS += \
     dctlq.h \
     defisheye.h \
     grwidget.h \
-    mainwindow.h
+    mainwindow.h \
+    wrapsettings.h
 
 SOURCES += \
     dctl_plugin.cpp \
@@ -21,7 +22,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     meike6.5f2.0.plugin.cpp \
-    ptgui11.plugin.cpp
+    ptgui11.plugin.cpp \
+    wrapsettings.cpp
 
 FORMS += \
     grwidget.ui \

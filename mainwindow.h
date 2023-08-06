@@ -36,6 +36,8 @@ private:
     void addParamWidget(int row, QPushButton* resetAll, void* param);
     void updateZoom(const QString& zoom);
 
+    static const int resetButtonMaxWidth = 50;
+
     DCTL_checkBox* m_equirectCheckBoxValues = nullptr;
 
     QString m_filename;
