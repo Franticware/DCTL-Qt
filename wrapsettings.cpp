@@ -50,13 +50,13 @@ bool WrapSettings::exists(const char* name)
 QString WrapSettings::getLensName() const
 {
     QString base = pluginName.mid(0, pluginName.lastIndexOf('.'));
-    int fIndex = base.lastIndexOf('f');
+    int fIndex = base.lastIndexOf(QRegularExpression("[0-9]f[0-9]"));
     if (fIndex == -1)
     {
         return base;
     }
-    QString fVal = base.mid(fIndex + 1);
-    QString half = base.mid(0, fIndex);
+    QString fVal = base.mid(fIndex + 2);
+    QString half = base.mid(0, fIndex + 1);
     int lastIndex = half.lastIndexOf(QRegularExpression("[^0-9.]"));
     if (lastIndex == -1)
     {
